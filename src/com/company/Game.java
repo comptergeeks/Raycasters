@@ -71,6 +71,7 @@ public class Game {
            p.playerX += p.playerDeltaX;
            p.playerY += p.playerDeltaY;
        }
+       /*
         if (keysDown[GLFW.GLFW_KEY_A]) {
             //System.out.println("left");
             p.playerAngle -=0.025; //maybe add sensitivity option that can be changed
@@ -80,11 +81,14 @@ public class Game {
             p.playerDeltaX = (float) Math.cos(p.playerAngle*5);
             p.playerDeltaY = (float) Math.sin(p.playerAngle*5);
         }
+
+        */
         if (keysDown[GLFW.GLFW_KEY_S]) {
             //System.out.println("down");
             p.playerX -= p.playerDeltaX;
             p.playerY -= p.playerDeltaY;
         }
+        /*
         if (keysDown[GLFW.GLFW_KEY_D]) {
             //System.out.println("right");
             p.playerAngle +=0.025;
@@ -93,6 +97,26 @@ public class Game {
             }
             p.playerDeltaX = (float) Math.cos(p.playerAngle*5);
             p.playerDeltaY = (float) Math.sin(p.playerAngle*5);
+        }
+
+         */
+        if (keysDown[GLFW.GLFW_KEY_A]) {
+            //System.out.println("left");
+            p.playerAngle -= 0.05f; // Adjust the angle decrement value to change rotation speed
+            if (p.playerAngle < 0) {
+                p.playerAngle += 2 * (float) Math.PI;
+            }
+            p.playerDeltaX = (float) Math.cos(p.playerAngle);
+            p.playerDeltaY = (float) Math.sin(p.playerAngle);
+        }
+        if (keysDown[GLFW.GLFW_KEY_D]) {
+            //System.out.println("right");
+            p.playerAngle += 0.05f; // Adjust the angle increment value to change rotation speed
+            if (p.playerAngle > 2 * Math.PI) {
+                p.playerAngle -= 2 * (float) Math.PI;
+            }
+            p.playerDeltaX = (float) Math.cos(p.playerAngle);
+            p.playerDeltaY = (float) Math.sin(p.playerAngle);
         }
     }
 

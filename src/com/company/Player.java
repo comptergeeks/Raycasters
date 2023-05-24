@@ -5,7 +5,7 @@ public class Player {
     float playerY;
     float playerDeltaX;
     float playerDeltaY;
-    float playerAngle = 0;
+    float playerAngle;
 
     public Player(float playerX, float playerY) {
         this.playerX = playerX;

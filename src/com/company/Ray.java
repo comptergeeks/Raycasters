@@ -24,20 +24,19 @@ public class Ray {
 
     public void createRay() {
         rayAngle = p.playerAngle;
-        for(int ray = 0; ray < 1; ray++) {
+        for (int ray = 0; ray < 1; ray++) {
             depthOfField = 0;
-            float inverseTan = (float) (-1/Math.tan(rayAngle));
+            float inverseTan = (float) (-1 / Math.tan(rayAngle));
             if (rayAngle > Math.PI) { //ray looking down
-                rayY = (float) ((((int)p.playerY>>6)<<6)-0.0001); //bitshifting for accuracy
-                rayX = (p.playerX - rayY)*inverseTan + p.playerX;
-                yOffset=-64;
-                xOffset=-yOffset*inverseTan;
-            } //ray looking up
-            if (rayAngle < Math.PI) {
-                rayY = (float) ((((int)p.playerY>>6)<<6)+64); //bitshifting for accuracy
-                rayX = (p.playerX - rayY)*inverseTan + p.playerX;
-                yOffset=64;
-                xOffset=-yOffset*inverseTan;
+                rayY = (float) ((((int) p.playerY >> 6) << 6) - 0.0001); //bitshifting for accuracy
+                rayX = (p.playerX - rayY) * inverseTan + p.playerX;
+                yOffset = -64;
+                xOffset = -yOffset * inverseTan;
+            } else if (rayAngle < Math.PI) { //ray looking up
+                rayY = (float) ((((int) p.playerY >> 6) << 6) + 64); //bitshifting for accuracy
+                rayX = (p.playerX - rayY) * inverseTan + p.playerX;
+                yOffset = 64;
+                xOffset = -yOffset * inverseTan;
             }
 
             //ray horizontal
@@ -52,7 +51,7 @@ public class Ray {
                 map = mapY*m.mapX + mapX;
                 if (map > 0 && map < m.mapX * m.mapY && m.mapDisplay[map] == 1)  { //wall hit
                     depthOfField = 8;
-                    System.out.println("HIT");
+                    //System.out.println("HIT");
                 } else {
                     rayX += xOffset;
                     rayY += yOffset;
@@ -63,6 +62,8 @@ public class Ray {
         }
     }
     public void drawRay() {
+        //System.out.println("Ray Angle: " + rayAngle);
+        //System.out.println("Player Angle: " + p.playerAngle);
         GL11.glColor3f(0, 1,0);
         GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES);
