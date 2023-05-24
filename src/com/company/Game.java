@@ -55,7 +55,6 @@ public class Game {
         while (!GLFW.glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             map.print2DMap();
-            createRays();
             drawPlayer();
 
             glfwSwapBuffers(window);
@@ -118,6 +117,7 @@ public class Game {
             p.playerDeltaX = (float) Math.cos(p.playerAngle);
             p.playerDeltaY = (float) Math.sin(p.playerAngle);
         }
+        createRays();
     }
 
     private static void drawPlayer() {

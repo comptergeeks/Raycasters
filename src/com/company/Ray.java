@@ -25,20 +25,32 @@ public class Ray {
     public void createRay() {
         rayAngle = p.playerAngle;
         for (int ray = 0; ray < 1; ray++) {
+            //horizontal
+
             depthOfField = 0;
-            float inverseTan = (float) (-1 / Math.tan(rayAngle));
-            if (rayAngle > Math.PI) { //ray looking down
-                rayY = (float) ((((int) p.playerY >> 6) << 6) - 0.0001); //bitshifting for accuracy
-                rayX = (p.playerX - rayY) * inverseTan + p.playerX;
+            float rayAngleRadians = rayAngle % (2 * (float) Math.PI);
+            if (rayAngleRadians < 0) {
+                rayAngleRadians += 2 * (float) Math.PI;
+            }
+            float inverseTan = (float) (-1 / Math.tan(rayAngleRadians));
+
+
+// Determine the initial ray direction based on the ray angle
+            float deltaX = (rayAngleRadians >= Math.PI && rayAngleRadians < 2 * Math.PI) ? -1 : 1;
+            float deltaY = (rayAngleRadians >= Math.PI / 2 && rayAngleRadians < 3 * Math.PI / 2) ? -1 : 1;
+
+            if (rayAngleRadians > Math.PI && rayAngleRadians < 2 * Math.PI) { // ray looking down
+                rayY = (float) ((((int) p.playerY >> 6) << 6) - 0.0001); // bitshifting for accuracy
+                rayX = p.playerX + (p.playerY - rayY) * inverseTan;
                 yOffset = -64;
                 xOffset = -yOffset * inverseTan;
-            } else if (rayAngle < Math.PI) { //ray looking up
-                rayY = (float) ((((int) p.playerY >> 6) << 6) + 64); //bitshifting for accuracy
-                rayX = (p.playerX - rayY) * inverseTan + p.playerX;
+                deltaX = -deltaX; // Invert the initial ray direction
+            } else if (rayAngleRadians >= 0 && rayAngleRadians < Math.PI) { // ray looking up
+                rayY = (float) ((((int) p.playerY >> 6) << 6) + 64); // bitshifting for accuracy
+                rayX = p.playerX + (p.playerY - rayY) * inverseTan;
                 yOffset = 64;
                 xOffset = -yOffset * inverseTan;
             }
-
             //ray horizontal
             if (rayAngle == (float) 0 || rayAngle == (float) Math.PI) {
                 rayX = p.playerX;
@@ -57,14 +69,67 @@ public class Ray {
                     rayY += yOffset;
                     depthOfField+=1; //next line
                 }
-                drawRay();
             }
+            GL11.glColor3f(0, 1,0);
+            GL11.glLineWidth(10);
+            GL11.glBegin(GL11.GL_LINES);
+            GL11.glVertex2i((int) p.playerX, (int) p.playerY);
+            GL11.glVertex2i((int) rayX, (int) rayY);
+            GL11.glEnd();
+
+
+
+            depthOfField = 0;
+            //float rayAngleRadians = rayAngle % (2 * (float) Math.PI);
+            if (rayAngleRadians < 0) {
+                rayAngleRadians += 2 * (float) Math.PI;
+            }
+            float negativeTan = (float) (-Math.tan(rayAngleRadians));
+            float p2 = (float) (Math.PI/2);
+            float p3 = (float) (3*Math.PI/2);
+
+            if (rayAngleRadians > p2 && rayAngleRadians < p3) { // ray looking left
+                rayX = (float) ((((int) p.playerY >> 6) << 6) - 0.0001); // bitshifting for accuracy
+                rayY = p.playerY + (p.playerX - rayX) * negativeTan;
+                xOffset = -64;
+                yOffset = -xOffset * negativeTan;
+                deltaY = -deltaY; // Invert the initial ray direction
+            } else if (rayAngleRadians < p2 || rayAngleRadians > p3) { // ray looking right
+                rayX = (float) ((((int) p.playerX >> 6) << 6) + 64); // bitshifting for accuracy
+                rayY = p.playerY + (p.playerX - rayX) * negativeTan;
+                xOffset = 64;
+                yOffset = -xOffset * negativeTan;
+            }
+
+
+
+
+            while (depthOfField < 8) {
+                mapX = (int) (rayX)>>6;
+                mapY = (int) (rayY)>>6;
+                map = mapY*m.mapX + mapX;
+                if (map > 0 && map < m.mapX * m.mapY && m.mapDisplay[map] == 1)  { //wall hit
+                    depthOfField = 8;
+                    //System.out.println("HIT");
+                } else {
+                    rayX += xOffset;
+                    rayY += yOffset;
+                    depthOfField+=1; //next line
+                }
+            }
+            GL11.glColor3f(1, 0,0);
+            GL11.glLineWidth(2);
+            GL11.glBegin(GL11.GL_LINES);
+            GL11.glVertex2i((int) p.playerX, (int) p.playerY);
+            GL11.glVertex2i((int) rayX, (int) rayY);
+            GL11.glEnd();
+
         }
     }
     public void drawRay() {
         //System.out.println("Ray Angle: " + rayAngle);
         //System.out.println("Player Angle: " + p.playerAngle);
-        GL11.glColor3f(0, 1,0);
+        GL11.glColor3f(1, 0,0);
         GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2i((int) p.playerX, (int) p.playerY);
