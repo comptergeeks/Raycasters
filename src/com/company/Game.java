@@ -111,6 +111,6 @@ public class Game {
 
     }
     private static void createRays() {
-        
+        Ray r = new Ray(p);
     }
 }
