@@ -25,17 +25,17 @@ public class Ray {
     public void createRay() {
         rayAngle = p.playerAngle;
         for (int ray = 0; ray < 1; ray++) {
-            //horizontal
-
+            //horizontal lines
             depthOfField = 0;
+            float distanceHorizontal = 1000000;
+            float horizontalX = p.playerX;
+            float horizontalY = p.playerY;
             float rayAngleRadians = rayAngle % (2 * (float) Math.PI);
             if (rayAngleRadians < 0) {
                 rayAngleRadians += 2 * (float) Math.PI;
             }
             float inverseTan = (float) (-1 / Math.tan(rayAngleRadians));
-
-
-// Determine the initial ray direction based on the ray angle
+            // Determine the initial ray direction based on the ray angle
             float deltaX = (rayAngleRadians >= Math.PI && rayAngleRadians < 2 * Math.PI) ? -1 : 1;
             float deltaY = (rayAngleRadians >= Math.PI / 2 && rayAngleRadians < 3 * Math.PI / 2) ? -1 : 1;
 
@@ -63,6 +63,9 @@ public class Ray {
                 map = mapY*m.mapX + mapX;
                 if (map > 0 && map < m.mapX * m.mapY && m.mapDisplay[map] == 1)  { //wall hit
                     depthOfField = 8;
+                    horizontalX  = rayX;
+                    horizontalY = rayY;
+                    distanceHorizontal = distance(p.playerX, p.playerY, horizontalX, horizontalY, rayAngle);
                     //System.out.println("HIT");
                 } else {
                     rayX += xOffset;
@@ -70,16 +73,11 @@ public class Ray {
                     depthOfField+=1; //next line
                 }
             }
-            GL11.glColor3f(0, 1,0);
-            GL11.glLineWidth(10);
-            GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2i((int) p.playerX, (int) p.playerY);
-            GL11.glVertex2i((int) rayX, (int) rayY);
-            GL11.glEnd();
-
-
-
+            //vertical line
             depthOfField = 0;
+            float distanceVertical = 1000000;
+            float verticalX = p.playerX;
+            float verticalY = p.playerY;
             //float rayAngleRadians = rayAngle % (2 * (float) Math.PI);
             if (rayAngleRadians < 0) {
                 rayAngleRadians += 2 * (float) Math.PI;
@@ -101,40 +99,44 @@ public class Ray {
                 yOffset = -xOffset * negativeTan;
             }
 
-
-
-
             while (depthOfField < 8) {
                 mapX = (int) (rayX)>>6;
                 mapY = (int) (rayY)>>6;
                 map = mapY*m.mapX + mapX;
                 if (map > 0 && map < m.mapX * m.mapY && m.mapDisplay[map] == 1)  { //wall hit
                     depthOfField = 8;
-                    //System.out.println("HIT");
+
+                    verticalX  = rayX;
+                    verticalY = rayY;
+                    distanceVertical = distance(p.playerX, p.playerY, verticalX, verticalY, rayAngle);
                 } else {
                     rayX += xOffset;
                     rayY += yOffset;
                     depthOfField+=1; //next line
                 }
             }
-            GL11.glColor3f(1, 0,0);
-            GL11.glLineWidth(2);
-            GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2i((int) p.playerX, (int) p.playerY);
-            GL11.glVertex2i((int) rayX, (int) rayY);
-            GL11.glEnd();
-
+            if(distanceVertical < distanceHorizontal) {
+                rayX = verticalX;
+                rayY = verticalY;
+            } else if(distanceHorizontal < distanceVertical) {
+                rayX = horizontalX;
+                rayY = horizontalY;
+            }
+            drawRay();
         }
     }
     public void drawRay() {
         //System.out.println("Ray Angle: " + rayAngle);
-        //System.out.println("Player Angle: " + p.playerAngle);
         GL11.glColor3f(1, 0,0);
         GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2i((int) p.playerX, (int) p.playerY);
         GL11.glVertex2i((int) rayX, (int) rayY);
         GL11.glEnd();
+        System.out.println(rayAngle);
+    }
+    public float distance(float ax, float ay, float bx, float by, float ang) {
+        return (float ) (Math.sqrt((bx - ax) * (bx -ax) + (by- ay) * (by - ay)));
 
     }
 }
