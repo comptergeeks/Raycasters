@@ -20,7 +20,6 @@ public class Game {
 
     }
 
-
     private static void init() {
         GLFW.glfwInit();
         GLFW.glfwDefaultWindowHints();
@@ -56,7 +55,9 @@ public class Game {
         while (!GLFW.glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             map.print2DMap();
+            createRays();
             drawPlayer();
+
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
@@ -66,12 +67,12 @@ public class Game {
     }
     private static void movePlayer() {
        if (keysDown[GLFW.GLFW_KEY_W]) {
-           System.out.println("up");
+           //System.out.println("up");
            p.playerX += p.playerDeltaX;
            p.playerY += p.playerDeltaY;
        }
         if (keysDown[GLFW.GLFW_KEY_A]) {
-            System.out.println("left");
+            //System.out.println("left");
             p.playerAngle -=0.025; //maybe add sensitivity option that can be changed
             if (p.playerAngle < 0) {
              p.playerAngle += 2*Math.PI;
@@ -80,12 +81,12 @@ public class Game {
             p.playerDeltaY = (float) Math.sin(p.playerAngle*5);
         }
         if (keysDown[GLFW.GLFW_KEY_S]) {
-            System.out.println("down");
+            //System.out.println("down");
             p.playerX -= p.playerDeltaX;
             p.playerY -= p.playerDeltaY;
         }
         if (keysDown[GLFW.GLFW_KEY_D]) {
-            System.out.println("right");
+            //System.out.println("right");
             p.playerAngle +=0.025;
             if (p.playerAngle > 2*Math.PI) {
                 p.playerAngle -= 2*Math.PI ;
@@ -111,6 +112,7 @@ public class Game {
 
     }
     private static void createRays() {
-        Ray r = new Ray(p);
+        Ray r = new Ray(p, map);
+        r.createRay();
     }
 }

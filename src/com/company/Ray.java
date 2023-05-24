@@ -1,5 +1,7 @@
 package com.company;
 
+import org.lwjgl.opengl.GL11;
+
 public class Ray {
     int ray;
     int mapX;
@@ -14,10 +16,13 @@ public class Ray {
     float yOffset;
 
     Player p;
-    public Ray(Player p) {
+    Map m;
+    public Ray(Player p, Map m) {
         this.p = p;
+        this.m = m;
     }
-    public void drawRay() {
+
+    public void createRay() {
         rayAngle = p.playerAngle;
         for(int ray = 0; ray < 1; ray++) {
             depthOfField = 0;
@@ -42,8 +47,28 @@ public class Ray {
                 depthOfField = 8;
             }
             while (depthOfField < 8) {
-                mapX = (int)
+                mapX = (int) (rayX)>>6;
+                mapY = (int) (rayY)>>6;
+                map = mapY*m.mapX + mapX;
+                if (map > 0 && map < m.mapX * m.mapY && m.mapDisplay[map] == 1)  { //wall hit
+                    depthOfField = 8;
+                    System.out.println("HIT");
+                } else {
+                    rayX += xOffset;
+                    rayY += yOffset;
+                    depthOfField+=1; //next line
+                }
+                drawRay();
             }
         }
+    }
+    public void drawRay() {
+        GL11.glColor3f(0, 1,0);
+        GL11.glLineWidth(1);
+        GL11.glBegin(GL11.GL_LINES);
+        GL11.glVertex2i((int) p.playerX, (int) p.playerY);
+        GL11.glVertex2i((int) rayX, (int) rayY);
+        GL11.glEnd();
+
     }
 }
