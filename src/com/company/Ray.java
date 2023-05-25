@@ -14,6 +14,9 @@ public class Ray {
     float rayY;
     float xOffset;
     float yOffset;
+    float finalDistance;
+
+    float oneDegToRad = (float) 0.0174533;
 
     Player p;
     Map m;
@@ -23,11 +26,16 @@ public class Ray {
     }
 
     public void createRay() {
-        rayAngle = p.playerAngle;
-        for (int ray = 0; ray < 1; ray++) {
-            //horizontal lines
+        int numRays = 120; // Adjust the number of rays as desired
+        float angleStep = (float) Math.PI / (3 * numRays); // Calculate the angle step size
+        int centerRayIndex = numRays / 2; // Calculate the index of the center ray
+
+        for (int rayIndex = 0; rayIndex < numRays; rayIndex++) {
+            float rayAngle = p.playerAngle - (float) Math.PI / 6 + rayIndex * angleStep;
+
+            // horizontal lines
             depthOfField = 0;
-            float distanceHorizontal = 1000000;
+            float distanceHorizontal = Float.POSITIVE_INFINITY; // Initialize with a large value
             float horizontalX = p.playerX;
             float horizontalY = p.playerY;
             float rayAngleRadians = rayAngle % (2 * (float) Math.PI);
@@ -78,7 +86,7 @@ public class Ray {
             float distanceVertical = 1000000;
             float verticalX = p.playerX;
             float verticalY = p.playerY;
-            //float rayAngleRadians = rayAngle % (2 * (float) Math.PI);
+            rayAngleRadians = rayAngle % (2 * (float) Math.PI);
             if (rayAngleRadians < 0) {
                 rayAngleRadians += 2 * (float) Math.PI;
             }
@@ -118,14 +126,29 @@ public class Ray {
             if(distanceVertical < distanceHorizontal) {
                 rayX = verticalX;
                 rayY = verticalY;
+                finalDistance = distanceVertical;
             } else if(distanceHorizontal < distanceVertical) {
                 rayX = horizontalX;
                 rayY = horizontalY;
+                finalDistance = distanceHorizontal;
             }
             drawRay();
+            //drawing 3d Scene
+            //320 x 160
+            float lineHeight = (m.mapSize * 320)/finalDistance;
+            if (lineHeight > 320) {
+                lineHeight = 320;
+            }
+            GL11.glLineWidth(16);
+            GL11.glBegin(GL11.GL_LINES);
+            GL11.glVertex2i(rayIndex*8 + 530, 0);
+            GL11.glVertex2i(rayIndex*8 + 530, (int) lineHeight);
+            GL11.glEnd();
+
         }
     }
     public void drawRay() {
+        checkRay();
         //System.out.println("Ray Angle: " + rayAngle);
         GL11.glColor3f(1, 0,0);
         GL11.glLineWidth(1);
@@ -133,10 +156,42 @@ public class Ray {
         GL11.glVertex2i((int) p.playerX, (int) p.playerY);
         GL11.glVertex2i((int) rayX, (int) rayY);
         GL11.glEnd();
-        System.out.println(rayAngle);
     }
     public float distance(float ax, float ay, float bx, float by, float ang) {
-        return (float ) (Math.sqrt((bx - ax) * (bx -ax) + (by- ay) * (by - ay)));
+        return (float) (Math.sqrt((bx - ax) * (bx -ax) + (by- ay) * (by - ay)));
+    }
+    public void checkRay() {
+        //make a point in front of the player, if the ray is hitting print otherwise dont print
 
     }
 }
+//if the ray is past a certain threshold, reflect it, most likely turn it to degrees
+/*
+            if (centerRay == numRays) {
+                System.out.println();
+            }
+*/
+
+/*
+SHOOTING MECHANIC
+public void createRay() {
+    int numRays = 120; // Adjust the number of rays as desired
+    float angleStep = (float) Math.PI / (3 * numRays); // Calculate the angle step size
+    int centerRayIndex = numRays / 2; // Calculate the index of the center ray
+
+    for (int rayIndex = 0; rayIndex < numRays; rayIndex++) {
+        float rayAngle = p.playerAngle - (float) Math.PI / 6 + rayIndex * angleStep;
+
+        // Rest of your code...
+        // Make sure to replace all references to the outer 'ray' variable with the 'rayAngle' variable.
+        // ...
+        // drawRay() method can remain the same.
+        // ...
+
+        if (rayIndex == centerRayIndex) {
+            // This is the center ray
+            // You can perform additional operations or calculations specifically for the center ray if needed
+        }
+    }
+}
+ */
