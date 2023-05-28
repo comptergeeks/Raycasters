@@ -2,12 +2,14 @@ package com.company;
 
 import org.lwjgl.opengl.GL11;
 
+
 public class Ray {
-    int ray;
     int mapX;
     int mapY;
     int map;
     int depthOfField;
+    int centerRayIndex;
+    int numRays;
 
     float rayAngle;
     float rayX;
@@ -15,6 +17,10 @@ public class Ray {
     float xOffset;
     float yOffset;
     float finalDistance;
+
+
+    //add keys up from main class, and then after create ray constructor
+
 
     float oneDegToRad = (float) 0.0174533;
 
@@ -26,9 +32,9 @@ public class Ray {
     }
 
     public void createRay() {
-        int numRays = 120; // Adjust the number of rays as desired
+        numRays = 120; // Adjust the number of rays as desired
         float angleStep = (float) Math.PI / (3 * numRays); // Calculate the angle step size
-        int centerRayIndex = numRays / 2; // Calculate the index of the center ray
+        centerRayIndex = numRays / 2; // Calculate the index of the center ray
 
         for (int rayIndex = 0; rayIndex < numRays; rayIndex++) {
             float rayAngle = p.playerAngle - (float) Math.PI / 6 + rayIndex * angleStep;
@@ -74,7 +80,6 @@ public class Ray {
                     horizontalX  = rayX;
                     horizontalY = rayY;
                     distanceHorizontal = distance(p.playerX, p.playerY, horizontalX, horizontalY, rayAngle);
-                    //System.out.println("HIT");
                 } else {
                     rayX += xOffset;
                     rayY += yOffset;
@@ -83,7 +88,7 @@ public class Ray {
             }
             //vertical line
             depthOfField = 0;
-            float distanceVertical = 1000000;
+            float distanceVertical = Float.POSITIVE_INFINITY; // Initialize with a large value
             float verticalX = p.playerX;
             float verticalY = p.playerY;
             rayAngleRadians = rayAngle % (2 * (float) Math.PI);
@@ -91,20 +96,34 @@ public class Ray {
                 rayAngleRadians += 2 * (float) Math.PI;
             }
             float negativeTan = (float) (-Math.tan(rayAngleRadians));
-            float p2 = (float) (Math.PI/2);
-            float p3 = (float) (3*Math.PI/2);
 
-            if (rayAngleRadians > p2 && rayAngleRadians < p3) { // ray looking left
-                rayX = (float) ((((int) p.playerY >> 6) << 6) - 0.0001); // bitshifting for accuracy
+            if (rayAngleRadians > Math.PI / 2 && rayAngleRadians < 3 * Math.PI / 2) { // ray looking left
+                rayX = (float) ((((int) p.playerX >> 6) << 6) - 0.0001); // bitshifting for accuracy
                 rayY = p.playerY + (p.playerX - rayX) * negativeTan;
                 xOffset = -64;
                 yOffset = -xOffset * negativeTan;
                 deltaY = -deltaY; // Invert the initial ray direction
-            } else if (rayAngleRadians < p2 || rayAngleRadians > p3) { // ray looking right
+            } else if (rayAngleRadians < Math.PI / 2 || rayAngleRadians > 3 * Math.PI / 2) { // ray looking right
                 rayX = (float) ((((int) p.playerX >> 6) << 6) + 64); // bitshifting for accuracy
                 rayY = p.playerY + (p.playerX - rayX) * negativeTan;
                 xOffset = 64;
                 yOffset = -xOffset * negativeTan;
+            }
+
+            while (depthOfField < 8) {
+                mapX = (int) (rayX) >> 6;
+                mapY = (int) (rayY) >> 6;
+                map = mapY * m.mapX + mapX;
+                if (map > 0 && map < m.mapX * m.mapY && m.mapDisplay[map] == 1) { // wall hit
+                    depthOfField = 8;
+                    verticalX = rayX;
+                    verticalY = rayY;
+                    distanceVertical = distance(p.playerX, p.playerY, verticalX, verticalY, rayAngle);
+                } else {
+                    rayX += xOffset;
+                    rayY += yOffset;
+                    depthOfField += 1; // next line
+                }
             }
 
             while (depthOfField < 8) {
@@ -132,7 +151,7 @@ public class Ray {
                 rayY = horizontalY;
                 finalDistance = distanceHorizontal;
             }
-            drawRay();
+            drawRay(rayIndex);
             //drawing 3d Scene
             //320 x 160
             float lineHeight = (m.mapSize * 320)/finalDistance;
@@ -147,10 +166,13 @@ public class Ray {
 
         }
     }
-    public void drawRay() {
-        checkRay();
+    public void drawRay(int rayIndex) {
         //System.out.println("Ray Angle: " + rayAngle);
-        GL11.glColor3f(1, 0,0);
+        if (rayIndex == centerRayIndex) {
+            GL11.glColor3f(1, 0 , 0);
+        } else {
+            GL11.glColor3f(0, 1,0 );
+        }
         GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2i((int) p.playerX, (int) p.playerY);
@@ -160,8 +182,7 @@ public class Ray {
     public float distance(float ax, float ay, float bx, float by, float ang) {
         return (float) (Math.sqrt((bx - ax) * (bx -ax) + (by- ay) * (by - ay)));
     }
-    public void checkRay() {
-        //make a point in front of the player, if the ray is hitting print otherwise dont print
+    public void fireRay() {
 
     }
 }

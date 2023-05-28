@@ -20,6 +20,8 @@ public class Game {
 
     }
 
+    // three options, 2d, 3d, and d
+    // set window height based on if boolean is true or not, if the window height is
     private static void init() {
         GLFW.glfwInit();
         GLFW.glfwDefaultWindowHints();
