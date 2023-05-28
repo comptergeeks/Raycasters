@@ -142,37 +142,55 @@ public class Ray {
                     depthOfField+=1; //next line
                 }
             }
+            //distance vertical and horizontal (setting to walls)
+            float colorChange = 0;
             if(distanceVertical < distanceHorizontal) {
+                colorChange = 0.9f; //darker
                 rayX = verticalX;
                 rayY = verticalY;
                 finalDistance = distanceVertical;
             } else if(distanceHorizontal < distanceVertical) {
+                colorChange = 0.7f; //lighter
                 rayX = horizontalX;
                 rayY = horizontalY;
                 finalDistance = distanceHorizontal;
             }
-            drawRay(rayIndex);
+            drawRay(rayIndex, colorChange);
+
             //drawing 3d Scene
-            //320 x 160
+            //320 h x 160 w
+
             float lineHeight = (m.mapSize * 320)/finalDistance;
             if (lineHeight > 320) {
                 lineHeight = 320;
             }
+            float cosAngle = p.playerAngle - rayAngle;
+            if (cosAngle < 0) {
+                cosAngle += 2 * Math.PI;
+            }
+            if (cosAngle > 2*Math.PI) {
+                rayAngle -= 2* Math.PI;
+            }
+            finalDistance = (float) (finalDistance*Math.cos(cosAngle)); // fish eye effect fixing
+            float lineOffset = 160 - lineHeight/2;
             GL11.glLineWidth(16);
             GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2i(rayIndex*8 + 530, 0);
-            GL11.glVertex2i(rayIndex*8 + 530, (int) lineHeight);
+            GL11.glVertex2i(rayIndex*8 + 530, (int) lineOffset); //shifting to right
+            GL11.glVertex2i(rayIndex*8 + 530, (int) ((int) lineHeight + lineOffset));
             GL11.glEnd();
 
         }
     }
-    public void drawRay(int rayIndex) {
+    public void drawRay(int rayIndex, float colorChange) {
         //System.out.println("Ray Angle: " + rayAngle);
+        /*
         if (rayIndex == centerRayIndex) {
             GL11.glColor3f(1, 0 , 0);
         } else {
             GL11.glColor3f(0, 1,0 );
         }
+         */
+        GL11.glColor3f(colorChange, 0 , 0);
         GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2i((int) p.playerX, (int) p.playerY);
