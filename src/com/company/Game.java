@@ -5,6 +5,8 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Scanner;
+
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -13,6 +15,9 @@ public class Game {
     private static long window;
     private static boolean[] keysDown;
     static Map map;
+    static int height = 512;
+    static int width = 1024;
+    static boolean dim3 = false;
 
     public static void main(String[] args) {
         init();
@@ -23,14 +28,25 @@ public class Game {
     // three options, 2d, 3d, and d
     // set window height based on if boolean is true or not, if the window height is
     private static void init() {
+        /*
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Would you like to start in 2d, 3d or Dev mode (d)");
+        String input = sc.nextLine();
+        if (input.contains("3d")) {
+            dim3 = true;
+        }
+
+         */
+
+
         GLFW.glfwInit();
         GLFW.glfwDefaultWindowHints();
         GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
-        window = GLFW.glfwCreateWindow(1024, 512, "Raycaster", 0, 0);
+        window = GLFW.glfwCreateWindow(width, height, "Raycaster", 0, 0);
         GLFW.glfwMakeContextCurrent(window);
         GL.createCapabilities();
         glClearColor(0.3f, 0.3f, 0.3f, 0f);
-        glOrtho(0, 1024, 512, 0, -1, 1);
+        glOrtho(0, width, height, 0, -1, 1);
 
         keysDown = new boolean[GLFW.GLFW_KEY_LAST]; //set up keys down
 
@@ -56,7 +72,9 @@ public class Game {
     private static void render() {
         while (!GLFW.glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            map.print2DMap();
+            if (!dim3) {
+                map.print2DMap();
+            }
             drawPlayer();
 
             glfwSwapBuffers(window);
@@ -124,6 +142,8 @@ public class Game {
 
     private static void drawPlayer() {
         movePlayer();
+        //draw 2d player
+        if (!dim3) {
         GL11.glColor3f(1, 1, 0);
         GL11.glPointSize(8);
         GL11.glBegin(GL_POINTS);
@@ -135,6 +155,8 @@ public class Game {
         glVertex2i((int) p.playerX, (int) p.playerY);
         glVertex2i((int) (p.playerX + p.playerDeltaX * 5), (int) (p.playerY + p.playerDeltaY * 5));
         glEnd();
+
+        }
 
     }
     private static void createRays() {

@@ -36,8 +36,7 @@ public class Map {
                 yOffset = y*mapSize;
                 GL11.glBegin(GL11.GL_QUADS);
                 GL11.glVertex2i(xOffset + 1, yOffset + 1);
-                GL11.glVertex2i(xOffset + 1 , yOffset + mapSize - 1);
-                //GL11.glVertex2i(xOffset + mapSize, yOffset);
+                GL11.glVertex2i(xOffset + 1 , yOffset + mapSize - 1);;
                 GL11.glVertex2i(xOffset + mapSize - 1, yOffset + mapSize - 1);
                 GL11.glVertex2i(xOffset + mapSize - 1, yOffset + 1);
                 GL11.glEnd();

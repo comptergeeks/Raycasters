@@ -34,7 +34,7 @@ public class Ray {
     public void createRay() {
         numRays = 120; // Adjust the number of rays as desired
         float angleStep = (float) Math.PI / (3 * numRays); // Calculate the angle step size
-        centerRayIndex = numRays / 2; // Calculate the index of the center ray
+//        centerRayIndex = numRays / 3; // Calculate the index of the center ray
 
         for (int rayIndex = 0; rayIndex < numRays; rayIndex++) {
             float rayAngle = p.playerAngle - (float) Math.PI / 6 + rayIndex * angleStep;
@@ -158,11 +158,17 @@ public class Ray {
             drawRay(rayIndex, colorChange);
 
             //drawing 3d Scene
-            //320 h x 160 w
-
-            float lineHeight = (m.mapSize * 320)/finalDistance;
-            if (lineHeight > 320) {
-                lineHeight = 320;
+            //320 w x 160 h
+            int height = 0;
+            int width = 160;
+            if (!Game.dim3) {
+               height = 320;
+            } else {
+                height = 512;
+            }
+            float lineHeight = (m.mapSize * height)/finalDistance;
+            if (lineHeight > height) {
+                lineHeight = height;
             }
             float cosAngle = p.playerAngle - rayAngle;
             if (cosAngle < 0) {
@@ -172,11 +178,18 @@ public class Ray {
                 rayAngle -= 2* Math.PI;
             }
             finalDistance = (float) (finalDistance*Math.cos(cosAngle)); // fish eye effect fixing
-            float lineOffset = 160 - lineHeight/2;
-            GL11.glLineWidth(16);
+            float lineOffset = width - lineHeight/2;
+            GL11.glLineWidth(24);
             GL11.glBegin(GL11.GL_LINES);
-            GL11.glVertex2i(rayIndex*8 + 530, (int) lineOffset); //shifting to right
-            GL11.glVertex2i(rayIndex*8 + 530, (int) ((int) lineHeight + lineOffset));
+            int offset = 530;
+            /*
+            if (Game.dim3) { //remove offset if tru
+                lineOffset = 0;
+                offset = 0;
+            }
+             */
+            GL11.glVertex2i(rayIndex*8 + offset, (int) lineOffset); //shifting to right
+            GL11.glVertex2i(rayIndex*8 +offset, (int) ((int) lineHeight + lineOffset));
             GL11.glEnd();
 
         }
@@ -185,17 +198,24 @@ public class Ray {
         //System.out.println("Ray Angle: " + rayAngle);
         /*
         if (rayIndex == centerRayIndex) {
-            GL11.glColor3f(1, 0 , 0);
+            GL11.glColor3f(colorChange, 0 , 0);
         } else {
             GL11.glColor3f(0, 1,0 );
         }
          */
+
+
+
         GL11.glColor3f(colorChange, 0 , 0);
+        if (!Game.dim3) { //draw 2d rays
         GL11.glLineWidth(1);
         GL11.glBegin(GL11.GL_LINES);
         GL11.glVertex2i((int) p.playerX, (int) p.playerY);
         GL11.glVertex2i((int) rayX, (int) rayY);
         GL11.glEnd();
+        }
+
+
     }
     public float distance(float ax, float ay, float bx, float by, float ang) {
         return (float) (Math.sqrt((bx - ax) * (bx -ax) + (by- ay) * (by - ay)));
