@@ -32,24 +32,35 @@ public class Player {
         }
 
         int playerGridPositionX = (int) (playerX / 64.0);
-        int playerGridPositionXOffset = (int) ((playerX + xOffset) / 64);
-        int playerGridPositionNegXOffset = (int) ((playerX - xOffset) / 64);
+        int playerGridPositionXOffset = (int) ((playerX + xOffset) / 64.0);
+        int playerGridPositionNegXOffset = (int) ((playerX - xOffset) / 64.0);
 
         int playerGridPositionY = (int) (playerY / 64.0);
-        int playerGridPositionYOffset = (int) ((playerY + yOffset) / 64);
-        int playerGridPositionNegYOffset = (int) ((playerY - yOffset) / 64);
-    }
+        int playerGridPositionYOffset = (int) ((playerY + yOffset) / 64.0);
+        int playerGridPositionNegYOffset = (int) ((playerY - yOffset) / 64.0);
 
-    public boolean checkPosY() {
-        if (m.mapDisplay[playerGridPositionYOffset * m.mapX + playerGridPositionX] == 0) {
+        if (checkPosX(m, playerGridPositionY, playerGridPositionXOffset)) {
             return true;
         }
+
+        if (checkPosY(m, playerGridPositionX, playerGridPositionYOffset)) {
+            return true;
+        }
+        return false;
+
     }
 
-    public boolean checkPosX() {
+    public boolean checkPosX(GameMap m, int playerGridPositionY, int playerGridPositionXOffset ) {
         if (m.mapDisplay[playerGridPositionY * m.mapX + playerGridPositionXOffset] == 0) {
             return true;
         }
+        return false;
+    }
+    public boolean checkPosY(GameMap m, int playerGridPositionX, int playerGridPositionYOffset) {
+        if (m.mapDisplay[playerGridPositionYOffset * m.mapX + playerGridPositionX] == 0) {
+            return true;
+        }
+        return false;
     }
 }
 

@@ -72,9 +72,8 @@ public class Game {
     private static void render() {
         while (!GLFW.glfwWindowShouldClose(window)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            if (!dim3) {
-                map.print2DMap();
-            }
+            map.print2DMap(0, 0, map.mapX, map.mapY, map.mapSize, map.mapDisplay);
+            movePlayer();
             drawPlayer();
 
             glfwSwapBuffers(window);
@@ -86,11 +85,14 @@ public class Game {
     }
     private static void movePlayer() {
        if (keysDown[GLFW.GLFW_KEY_W]) {
-
            //System.out.println("up");
-           if
-           p.playerX += p.playerDeltaX;
-           p.playerY += p.playerDeltaY;
+           if (p.checkCollision(map)) {
+               p.playerX += p.playerDeltaX;
+           }
+           if (p.checkCollision(map)) {
+               p.playerY += p.playerDeltaY;
+           }
+
        }
         if (keysDown[GLFW.GLFW_KEY_S]) {
             //System.out.println("down");
@@ -119,7 +121,7 @@ public class Game {
     }
 
     private static void drawPlayer() {
-        movePlayer();
+        //movePlayer();
         //draw 2d player
         if (!dim3) {
         GL11.glColor3f(1, 1, 0);
