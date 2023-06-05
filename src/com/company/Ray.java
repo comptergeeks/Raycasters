@@ -8,10 +8,10 @@ public class Ray {
     int mapY;
     int map;
     int depthOfField;
-    int centerRayIndex;
+    //int centerRayIndex;
     int numRays;
 
-    float rayAngle;
+    //float rayAngle;
     float rayX;
     float rayY;
     float xOffset;
@@ -25,8 +25,8 @@ public class Ray {
     float oneDegToRad = (float) 0.0174533;
 
     Player p;
-    Map m;
-    public Ray(Player p, Map m) {
+    GameMap m;
+    public Ray(Player p, GameMap m) {
         this.p = p;
         this.m = m;
     }
@@ -34,7 +34,7 @@ public class Ray {
     public void createRay() {
         numRays = 120; // Adjust the number of rays as desired
         float angleStep = (float) Math.PI / (3 * numRays); // Calculate the angle step size
-//        centerRayIndex = numRays / 3; // Calculate the index of the center ray
+//      centerRayIndex = numRays / 3; // Calculate the index of the center ray
 
         for (int rayIndex = 0; rayIndex < numRays; rayIndex++) {
             float rayAngle = p.playerAngle - (float) Math.PI / 6 + rayIndex * angleStep;

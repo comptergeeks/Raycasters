@@ -2,12 +2,12 @@ package com.company;
 
 import org.lwjgl.opengl.GL11;
 
-public class Map {
+public class GameMap {
     int mapX;
     int mapY;
     int mapSize;
     int[] mapDisplay;
-    public Map() {
+    public GameMap() {
         mapX = 8;
         mapY = 8;
         mapSize = 64;

@@ -14,7 +14,7 @@ public class Game {
     static Player p;
     private static long window;
     private static boolean[] keysDown;
-    static Map map;
+    static GameMap map;
     static int height = 512;
     static int width = 1024;
     static boolean dim3 = false;
@@ -66,7 +66,7 @@ public class Game {
 
         p = new Player(300, 300);
         p.setDeltas((float) Math.cos(p.playerAngle*5), (float) Math.sin(p.playerAngle*5));
-        map = new Map();
+        map = new GameMap();
 
     }
     private static void render() {
@@ -86,39 +86,17 @@ public class Game {
     }
     private static void movePlayer() {
        if (keysDown[GLFW.GLFW_KEY_W]) {
+
            //System.out.println("up");
+           if
            p.playerX += p.playerDeltaX;
            p.playerY += p.playerDeltaY;
        }
-       /*
-        if (keysDown[GLFW.GLFW_KEY_A]) {
-            //System.out.println("left");
-            p.playerAngle -=0.025; //maybe add sensitivity option that can be changed
-            if (p.playerAngle < 0) {
-             p.playerAngle += 2*Math.PI;
-            }
-            p.playerDeltaX = (float) Math.cos(p.playerAngle*5);
-            p.playerDeltaY = (float) Math.sin(p.playerAngle*5);
-        }
-
-        */
         if (keysDown[GLFW.GLFW_KEY_S]) {
             //System.out.println("down");
             p.playerX -= p.playerDeltaX;
             p.playerY -= p.playerDeltaY;
         }
-        /*
-        if (keysDown[GLFW.GLFW_KEY_D]) {
-            //System.out.println("right");
-            p.playerAngle +=0.025;
-            if (p.playerAngle > 2*Math.PI) {
-                p.playerAngle -= 2*Math.PI ;
-            }
-            p.playerDeltaX = (float) Math.cos(p.playerAngle*5);
-            p.playerDeltaY = (float) Math.sin(p.playerAngle*5);
-        }
-
-         */
         if (keysDown[GLFW.GLFW_KEY_A]) {
             //System.out.println("left");
             p.playerAngle -= 0.05f; // Adjust the angle decrement value to change rotation speed
